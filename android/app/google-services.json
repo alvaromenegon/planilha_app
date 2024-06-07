@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1010962985909",
+    "project_id": "planilla-pt2024",
+    "storage_bucket": "planilla-pt2024.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1010962985909:android:6ef27db294f80835161ffc",
+        "android_client_info": {
+          "package_name": "com.example.planilla_android"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA0gj6SuI95aWxVxH8zUB_t3PbQwR99hdo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

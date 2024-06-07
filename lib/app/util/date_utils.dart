@@ -1,0 +1,24 @@
+class DateUtils {
+  static final List<String> months = [
+    'Janeiro',
+    'Fevereiro',
+    'Março',
+    'Abril',
+    'Maio',
+    'Junho',
+    'Julho',
+    'Agosto',
+    'Setembro',
+    'Outubro',
+    'Novembro',
+    'Dezembro'
+  ];
+
+  static int getMonthNumber(String month) {
+    return months.indexOf(month) + 1;
+  }
+
+  static List<String> generateYears({int min = 2024, int max = 2025}) {
+    return List.generate(max - min + 1, (i) => (min + i).toString());
+  }
+}
