@@ -3,6 +3,7 @@ import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/dropdown.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
+import 'package:planilla_android/app/services/file_services.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 
 class MonthViewPage extends StatefulWidget {
@@ -15,6 +16,7 @@ class MonthViewPage extends StatefulWidget {
 class MonthViewPageState extends State<MonthViewPage> {
   String selectedMonth = DateTime.now().month.toString();
   String selectedYear = DateTime.now().year.toString();
+  String saveButtonText = 'Salvar como JSON';
   List<Item> monthData = [];
   final List<String> _months = [
     'Janeiro',
@@ -100,6 +102,23 @@ class MonthViewPageState extends State<MonthViewPage> {
                   Navigator.pushNamed(context, '/add_item');
                 },
               ),
+              Button.secondary(label: saveButtonText,
+                  onPressed: () async{
+                    setState(() {
+                      saveButtonText = 'Salvando...';
+                    });
+                    int result = await FileServices.saveMonthData(selectedYear, selectedMonth);
+                    if (result == 1){
+                      setState(() {
+                        saveButtonText = 'Salvo!';
+                      });
+                    } else {
+                      setState(() {
+                        saveButtonText = 'Erro ao salvar';
+                      });
+                    }
+                  },
+              )
             ],
           ),
         ));

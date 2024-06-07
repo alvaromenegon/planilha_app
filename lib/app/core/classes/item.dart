@@ -81,7 +81,21 @@ class Item implements JsonObject {
 
   @override
   String toString(){
-    return 'Item: $item, Type: $type, Details: $detail, EUR Value: $eurValue, BRL Value: $brlValue, Date: $date, EUR Balance: $eurBalance, BRL Balance: $brlBalance, Timestamp: $timestamp';
+    return '${toJson().toString()},\n';
+  }
+
+  String toJsonFile(){
+    return '''{
+      "item": "$item",
+      "type": "$type",
+      "detail": "$detail",
+      "eurValue": $eurValue,
+      "brlValue": $brlValue,
+      "date": "$date",
+      "eurBalance": $eurBalance,
+      "brlBalance": $brlBalance,
+      "timestamp": "$timestamp"
+    }''';
   }
 
 }
