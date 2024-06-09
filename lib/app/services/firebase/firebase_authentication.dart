@@ -22,4 +22,10 @@ class FirebaseAuthServices {
     }
     return '';
   }
+
+  static bool isLogged(){
+    final user = FirebaseAuth.instance.currentUser;
+    print(user);
+    return user != null;
+  }
 }

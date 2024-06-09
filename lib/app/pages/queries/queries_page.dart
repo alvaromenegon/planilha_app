@@ -8,6 +8,7 @@ import 'package:planilla_android/app/core/classes/query.dart';
 import 'package:planilla_android/app/core/ui/styles/colors_app.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 import 'package:logging/logging.dart';
+import 'package:planilla_android/app/util/date_util.dart';
 
 final log = Logger('QueryPageState');
 
@@ -22,20 +23,7 @@ class QueryPageState extends State<QueryPage> {
   final _formKey = GlobalKey<FormState>();
   bool _invalid = false;
   List<Item> _data = [];
-  final List<String> _months = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro'
-  ];
+
   final List<String> _years = List.generate(
       2025 // Max year to show in the dropdown
           -
@@ -64,7 +52,7 @@ class QueryPageState extends State<QueryPage> {
     });
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Queries'),
+          title: const Text('Pesquisa'),
         ),
         body: SingleChildScrollView(
             child: Column(
@@ -78,12 +66,13 @@ class QueryPageState extends State<QueryPage> {
                         Expanded(
                           child: Dropdown(
                               label: 'Mês',
-                              items: _months,
-                              value: _months[int.parse(query.month) - 1],
+                              items: DateUtil.months,
+                              value: DateUtil.getMonth(query.month),
                               onChanged: (value) {
                                 setState(() {
                                   query.month =
-                                      (_months.indexOf(value!) + 1).toString();
+                                      (DateUtil.months.indexOf(value!) + 1)
+                                          .toString();
                                 });
                               }),
                         ),
@@ -99,6 +88,25 @@ class QueryPageState extends State<QueryPage> {
                               }),
                         )
                       ],
+                    ),
+                    Button.secondary(
+                      label: 'Pesquisar tudo no mês',
+                      outline: true,
+                      onPressed: () async {
+                        // chamar a função de pesquisa
+                        if (_formKey.currentState!.validate()) {
+                          _formKey.currentState!.save();
+                          _invalid = false;
+                          log.info('${query.year}, ${query.month}');
+
+                          //log.info('Data: $_data');
+                          FirestoreServices()
+                              .getItems(query.year, query.month)
+                              .then((value) {
+                            updateData(value);
+                          });
+                        }
+                      },
                     ),
                     Row(children: [
                       Expanded(
@@ -125,58 +133,57 @@ class QueryPageState extends State<QueryPage> {
                                 });
                               })),
                     ]),
-                    Input(
-                      label: 'Valor',
-                      value: query.value,
-                      type: query.field == 'Valor' ? 'number' : 'text',
-                      invalid: _invalid,
-                      onChanged: (value) {
-                        setState(() {
-                          query.value = value;
-                        });
-                      },
-                    ),
-                    Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Button.primary(
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate() &&
-                                  query.validate()) {
-                                _formKey.currentState!.save();
-                                _invalid = false;
-                                // chamar a função de pesquisa
-                                _data = await FirestoreServices()
-                                    .getItemsWithQuery(query);
-                                log.info('Data: $_data');
-                              } else {
-                                setState(() {
-                                  _invalid = true;
-                                });
-                              }
+                    query.field == 'Tipo'
+                        ? Dropdown(
+                            label: 'Valor',
+                            items: const [
+                              '',
+                              'Alimentação',
+                              'Aluguel',
+                              'Casa',
+                              'Contas',
+                              'Roupas',
+                              'Taxas',
+                              'Transporte',
+                              'Lazer',
+                              'Outros'
+                            ],
+                            value: query.value,
+                            onChanged: (value) {
+                              setState(() {
+                                query.value = value!;
+                              });
+                            })
+                        : Input(
+                            label: 'Valor',
+                            value: query.value,
+                            type: query.field == 'Valor' ? 'number' : 'text',
+                            //invalid: _invalid,
+                            onChanged: (value) {
+                              setState(() {
+                                query.value = value;
+                              });
                             },
-                            label: 'Consultar',
                           ),
-                          Button.secondary(
-                            label: 'Pesquisar tudo no mês',
-                            outline: true,
-                            onPressed: () async {
-                              // chamar a função de pesquisa
-                              if (_formKey.currentState!.validate()) {
-                                _formKey.currentState!.save();
-                                _invalid = false;
-                                log.info('${query.year}, ${query.month}');
-
-                                //log.info('Data: $_data');
-                                FirestoreServices()
-                                    .getItems(query.year, query.month)
-                                    .then((value) {
-                                  updateData(value);
-                                });
-                              }
-                            },
-                          )
-                        ]),
+                    Button.primary(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate() &&
+                            query.validate()) {
+                          _formKey.currentState!.save();
+                          _invalid = false;
+                          // chamar a função de pesquisa
+                          FirestoreServices()
+                              .getItemsWithQuery(query)
+                              .then((value) => updateData(value));
+                          log.info('Data: $_data');
+                        } else {
+                          setState(() {
+                            _invalid = true;
+                          });
+                        }
+                      },
+                      label: 'Consultar',
+                    ),
                   ],
                 )),
             Padding(

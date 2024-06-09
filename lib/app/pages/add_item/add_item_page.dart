@@ -57,7 +57,8 @@ class AddItemFormState extends State<AddItemForm> {
 
   @override
   Widget build(BuildContext context) {
-    return Form(
+    return SingleChildScrollView(
+        child: Form(
       key: _formKey,
       child: Column(
         children: [
@@ -112,7 +113,7 @@ class AddItemFormState extends State<AddItemForm> {
           ),
           Button.primary(
               onPressed: () async {
-                if (_success != SaveItemResults.loading.index) {
+                if (_success == SaveItemResults.loading.index) {
                   return;
                 }
                 if (_formKey.currentState!.validate()) {
@@ -121,6 +122,7 @@ class AddItemFormState extends State<AddItemForm> {
                   _success = await fs.saveItem(_item);
                   //_success = true;
                   if (_success == SaveItemResults.success.index) {
+                    
                     print('Success');
                   } else if (_success == SaveItemResults.invalidData.index) {
                     print('Invalid data');
@@ -148,6 +150,9 @@ class AddItemFormState extends State<AddItemForm> {
                   } else {
                     print('Error');
                   }
+                  setState(() {
+                    _success = SaveItemResults.idle.index;
+                  });
                 }
               },
               label: _success == SaveItemResults.idle.index
@@ -155,6 +160,6 @@ class AddItemFormState extends State<AddItemForm> {
                   : 'Aguarde...'),
         ],
       ),
-    );
+    ));
   }
 }

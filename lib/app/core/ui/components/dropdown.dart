@@ -9,6 +9,8 @@ class Dropdown extends StatelessWidget {
   final String value;
   final void Function(String?) onChanged;
   final bool expand;
+  final MainAxisAlignment mainAxisAlign;
+  final CrossAxisAlignment crossAxisAlign;
 
   const Dropdown({
     super.key,
@@ -16,6 +18,8 @@ class Dropdown extends StatelessWidget {
     required this.items,
     required this.value,
     this.expand = false,
+    this.mainAxisAlign = MainAxisAlignment.spaceBetween,
+    this.crossAxisAlign = CrossAxisAlignment.start,
     required this.onChanged,
   });
 
@@ -51,9 +55,9 @@ class Dropdown extends StatelessWidget {
     if (!expand) {
       return Padding(
           padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            mainAxisAlignment: mainAxisAlign,
+            crossAxisAlignment: crossAxisAlign,
             children: [
               Label(label),
               DecoratedBox(

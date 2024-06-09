@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
@@ -102,13 +104,19 @@ class MonthViewPageState extends State<MonthViewPage> {
                   Navigator.pushNamed(context, '/add_item');
                 },
               ),
-              Button.secondary(label: saveButtonText,
-                  onPressed: () async{
+              Button.secondary(
+                label: saveButtonText,
+                onPressed: () async {
+                  if (!Platform.isAndroid) {
+                    print(
+                        'Not an android device, saving as JSON is not supported');
+                  } else {
                     setState(() {
                       saveButtonText = 'Salvando...';
                     });
-                    int result = await FileServices.saveMonthData(selectedYear, selectedMonth);
-                    if (result == 1){
+                    int result = await FileServices.saveMonthData(
+                        selectedYear, selectedMonth);
+                    if (result == 1) {
                       setState(() {
                         saveButtonText = 'Salvo!';
                       });
@@ -117,7 +125,8 @@ class MonthViewPageState extends State<MonthViewPage> {
                         saveButtonText = 'Erro ao salvar';
                       });
                     }
-                  },
+                  }
+                },
               )
             ],
           ),

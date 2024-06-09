@@ -1,4 +1,4 @@
-class DateUtils {
+class DateUtil {
   static final List<String> months = [
     'Janeiro',
     'Fevereiro',
@@ -14,8 +14,8 @@ class DateUtils {
     'Dezembro'
   ];
 
-  static int getMonthNumber(String month) {
-    return months.indexOf(month) + 1;
+  static String getMonth(String month) {
+    return months[int.parse(month) - 1];
   }
 
   static List<String> generateYears({int min = 2024, int max = 2025}) {

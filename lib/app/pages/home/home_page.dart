@@ -18,14 +18,19 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<MonthDataOverview> yearData = [];
   FirestoreServices fs = FirestoreServices();
+
+  Future<void> loadData () async{
+    List<MonthDataOverview> data = await fs.getYearDataOverview('${DateTime.now().year}');
+    setState(() {
+      yearData = data;
+    });
+
+  }
+
   @override
   void initState() {
     super.initState();
-    fs
-        .getYearDataOverview('${DateTime.now().year}')
-        .then((value) => setState(() {
-              yearData = value;
-            }));
+    loadData();
   }
 
   @override

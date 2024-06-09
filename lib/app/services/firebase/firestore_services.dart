@@ -15,6 +15,11 @@ enum AddBalanceResults { idle, loading, success, invalidData }
 enum SaveItemResults { idle, loading, success, noBalance, invalidData }
 
 class FirestoreServices {
+  final bool _debugMode = true;
+
+  String get balancePath => _debugMode ? 'testBalance' : 'balance';
+  String get dataPath => _debugMode ? 'test' : 'data';
+
   ///newBalanceID = o id do saldo que será adicionado
   ///
   ///newExcRate = a taxa de câmbio do saldo que será adicionado
@@ -30,7 +35,7 @@ class FirestoreServices {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
     //final docRef = db.collection('balance').doc('averageExcRate');
-    final docRef = db.collection('testBalance').doc('averageExcRate');
+    final docRef = db.collection(balancePath).doc('averageExcRate');
     final data = await docRef.get();
     if (data.exists) {
       final json = data.data() ?? {};
@@ -76,7 +81,7 @@ class FirestoreServices {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
     //final docRef = db.collection('balance').doc();
-    final coll = db.collection('testBalance');
+    final coll = db.collection(balancePath);
     final collCount = await coll.count().get();
     final count = collCount.count ?? 0;
     if (count < 2) {
@@ -112,7 +117,7 @@ class FirestoreServices {
     List<MonthDataOverview> yearData = [];
     for (var i = 1; i <= 12; i++) {
       List<Item> monthlyData = [];
-      final coll = db.collection('data').doc(year).collection('$i');
+      final coll = db.collection(dataPath).doc(year).collection('$i');
       //final coll = db.collection('test').doc(year).collection('$i'); //test collection
       final snapshot = await coll.get();
       if (snapshot.docs.isNotEmpty) {
@@ -150,7 +155,7 @@ class FirestoreServices {
     var db = FirebaseFirestore.instance;
     final docRef =
         //db.collection('balance').where('currentEurValue', isGreaterThan: 0);
-        db.collection('testBalance').where('currentEurValue', isGreaterThan: 0);
+        db.collection(balancePath).where('currentEurValue', isGreaterThan: 0);
     final data = await docRef.get();
     if (data.docs.isEmpty) {
       return [];
@@ -162,7 +167,7 @@ class FirestoreServices {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
     //final docRef = db.collection('balance').doc('averageExcRate');
-    final docRef = db.collection('testBalance').doc('averageExcRate');
+    final docRef = db.collection(balancePath).doc('averageExcRate');
     final data = await docRef.get();
     print(data.data());
     if (data.exists) {
@@ -233,7 +238,7 @@ class FirestoreServices {
       for (var balance in updatedBalanceList) {
         //final balanceRef = db.collection('balance').doc(balance.balanceId);
         final balanceRef = db
-            .collection('testBalance')
+            .collection(balancePath)
             .doc(balance.balanceId); //test collection(balance)
         batch.update(balanceRef, balance.toJson());
       }
@@ -299,7 +304,7 @@ class FirestoreServices {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
     //final docRef = db.collection('data').doc(year).collection(month);
-    final docRef = db.collection('test').doc(year).collection(month);
+    final docRef = db.collection(dataPath).doc(year).collection(month);
     //Atualiza os saldos
     item.brlValue = item.eurValue * await getExchangeRate();
     item.eurBalance = newTotalBalance.totalEurBalance;
@@ -312,7 +317,7 @@ class FirestoreServices {
   Future<List<Item>> getItems(String year, String month) async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    final docRef = db.collection('data').doc(year).collection(month);
+    final docRef = db.collection(dataPath).doc(year).collection(month);
     //final docRef = db.collection('test').doc(year).collection(month);
     final data = await docRef.get();
     if (data.docs.isEmpty) {
@@ -326,7 +331,7 @@ class FirestoreServices {
     var db = FirebaseFirestore.instance;
     //final docRef = db.collection('data').doc(query.year).collection(query.month);
     final docRef =
-        db.collection('test').doc(query.year).collection(query.month);
+        db.collection(dataPath).doc(query.year).collection(query.month);
     List<Item> items = [];
     switch (query.queryOperator) {
       case '==':

@@ -12,7 +12,7 @@ class SplashRoute extends FlutterGetItPageRouter{
   ];
 
   @override
-  String get routeName => '/login';
+  String get routeName => '/auth/login';
 
   @override
   WidgetBuilder get view => (_) => const LoginPage(); 
