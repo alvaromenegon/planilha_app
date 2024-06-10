@@ -16,6 +16,7 @@ class BackupPage extends StatefulWidget {
 class BackupPageState extends State<BackupPage> {
   List<Item> importedData = [];
   bool importing = false;
+  bool saving = false;
 
   void importData(List<Item> data) {
     setState(() {
@@ -34,10 +35,32 @@ class BackupPageState extends State<BackupPage> {
           padding: const EdgeInsets.all(8),
           child: Column(
             children: [
-              Button.secondary(
-                label: 'Salvar backup',
+              Button.primary(
+                label: saving ? 'Salvando backup...' : 'Salvar backup',
                 onPressed: () async {
-                  await FileServices.saveMonthData('2024', '6');
+                  setState(() {
+                    saving = true;
+                  });
+                  int result = await FileServices.saveBackup();
+                  if (result == FileOperationResult.error.index) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Erro ao salvar backup')));
+                    }
+                  } else if (result == FileOperationResult.noData.index) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Não há dados para salvar')));
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                          content: Text('Backup salvo com sucesso!')));
+                    }
+                  }
+                  setState(() {
+                    saving = false;
+                  });
                 },
               ),
               Divider(

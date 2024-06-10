@@ -4,11 +4,12 @@ import 'package:planilla_android/app/core/errors/errors.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 import 'package:planilla_android/app/util/file_util.dart';
 
+enum FileOperationResult { success, error, noData }
+
 class FileServices {
-  static Future<int> saveMonthData(String year, String month) async {
-    List<Item> data = [];
+  static Future<int> saveBackup() async {
     String fileContent = '';
-    data = await FirestoreServices().getItems(year, month);
+    List<Item> data = await FirestoreServices().getAllItems();
     if (data.isNotEmpty) {
       for (int i = 0; i < data.length; i++) {
         fileContent += data[i].convertToCSV();
@@ -17,10 +18,10 @@ class FileServices {
         }
       }
 
-      await FileUtil.writeToFile('$year-$month-backup.csv', fileContent);
-      return 1;
+      await FileUtil.writeToFile('${DateTime.now().millisecondsSinceEpoch}-backup.csv', fileContent);
+      return FileOperationResult.success.index;
     }
-    return 0;
+    return FileOperationResult.noData.index;
   }
 
   static Future<List<Item>?> readMonthData() async {

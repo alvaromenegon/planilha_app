@@ -21,6 +21,34 @@ class FirestoreServices {
   String get balancePath => _debugMode ? 'testBalance' : 'balance';
   String get dataPath => _debugMode ? 'test' : 'data';
 
+  Future<List<Item>> getAllItems() async {
+    await Firebase.initializeApp();
+    var db = FirebaseFirestore.instance;
+    final rootSnapshot = await db.collection('data').get();
+    List<String> years = [];
+    for (var docSnapshot in rootSnapshot.docs) {
+      years.add(docSnapshot.id);
+    }
+    List<Item> items = [];
+    try {
+      for (var year in years) {
+        for (int i = 1; i <= 12; i++) {
+          final yearSnapshot =
+              await db.collection('data').doc(year).collection('$i').get();
+          for (var docSnapshot in yearSnapshot.docs) {
+            //print(docSnapshot.id);
+            if (docSnapshot.exists) {
+              items.add(Item.fromJson(docSnapshot.data()));
+            }
+          }
+        }
+      }
+    } catch (e) {
+      print(e);
+    }
+    return items;
+  }
+
   ///newBalanceID = o id do saldo que será adicionado
   ///
   ///newExcRate = a taxa de câmbio do saldo que será adicionado
