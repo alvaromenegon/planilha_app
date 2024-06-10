@@ -5,7 +5,6 @@ import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/dropdown.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
-import 'package:planilla_android/app/services/file_services.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 
 class MonthViewPage extends StatefulWidget {
@@ -20,7 +19,6 @@ class MonthViewPageState extends State<MonthViewPage> {
   String selectedYear = DateTime.now().year.toString();
   String saveButtonText = 'Salvar backup';
   List<Item> monthData = [];
-  List<Item> importedData = [];
   final List<String> _months = [
     'Janeiro',
     'Fevereiro',
@@ -46,12 +44,6 @@ class MonthViewPageState extends State<MonthViewPage> {
     List<Item> data = await FirestoreServices().getItems(year, month);
     setState(() {
       monthData = data;
-    });
-  }
-
-  void importData(List<Item> data) {
-    setState(() {
-      importedData = data;
     });
   }
 
@@ -113,57 +105,12 @@ class MonthViewPageState extends State<MonthViewPage> {
               ),
               Platform.isAndroid
                   ? Button.secondary(
-                      label: saveButtonText,
+                      label: 'Salvar backup',
                       onPressed: () async {
-                        setState(() {
-                          saveButtonText = 'Salvando...';
-                        });
-                        int result = await FileServices.saveMonthData(
-                            selectedYear, selectedMonth);
-                        if (result == 1) {
-                          setState(() {
-                            saveButtonText = 'Salvo!';
-                          });
-                        } else {
-                          setState(() {
-                            saveButtonText = 'Erro ao salvar';
-                          });
-                        }
+                        Navigator.pushNamed(context, '/backup');
                       },
                     )
                   : Container(),
-                  const Divider(),
-              Button.primary(
-                label: 'Importar backup',
-                outline: true,
-                onPressed: () async {
-                  final data = await FileServices.readMonthData();
-                  if (data != null) {
-                    importData(data);
-                  }
-                },
-              ),
-              importedData.isNotEmpty
-                  ? Column(children:[
-                    const Text('Dados a serem importados'),
-                    Tabela(data: importedData, headers: Item.getHeaders()),
-                    Button.primary(
-                      label: 'Importar dados', 
-                      onPressed: () async{
-                        List<int> results = await FirestoreServices().importItems(importedData);
-                        if (results.contains(SaveItemResults.invalidData.index)){
-                          print('Erro ao importar dados: Dados inválidos');
-                        } else if (results.contains(SaveItemResults.noBalance.index)){
-                          print('Não há saldo suficiente para todos os itens');
-                        } else {
-                          print('Dados importados com sucesso');
-                        }
-                    },),
-                  ]
-
-                    )
-                  : Container(),
-
             ],
           ),
         ));

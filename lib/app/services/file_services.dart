@@ -51,7 +51,6 @@ class FileServices {
       fileName = 'import-success.txt';
     } else {
       for (int i = 0; i < data.length; i++) {
-        print('result: ${results[i]}');
         if (results[i] != SaveItemResults.success.index) {
           if (results[i] == SaveItemResults.invalidData.index) {
             await FileUtil.writeToFile('import-invalid.txt', 'Dados inválidos: ${data[i].convertToCSV()}');
