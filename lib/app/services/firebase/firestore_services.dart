@@ -6,7 +6,8 @@ import 'package:planilla_android/app/core/classes/balance.dart';
 import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/classes/month_data_overview.dart';
 import 'package:planilla_android/app/core/classes/total_balance.dart';
-import 'package:planilla_android/app/core/errors/no_balance_available.dart';
+import 'package:planilla_android/app/core/errors/errors.dart';
+import 'package:planilla_android/app/services/file_services.dart';
 import 'package:planilla_android/app/util/util.dart';
 import 'package:planilla_android/app/core/classes/query.dart';
 
@@ -189,11 +190,13 @@ class FirestoreServices {
     final totalBalance = await getTotalBalance();
     final oldEurBalance = totalBalance.totalEurBalance;
     final exchangeRate = await getExchangeRate();
-    final newEurBalance = Util.roundToPrecision(value: (oldEurBalance - eurValue));
+    final newEurBalance =
+        Util.roundToPrecision(value: (oldEurBalance - eurValue));
     if (newEurBalance < 0) {
       throw NoBalanceAvailable();
     }
-    var newBrlBalance = Util.roundToPrecision(value: (newEurBalance * exchangeRate));
+    var newBrlBalance =
+        Util.roundToPrecision(value: (newEurBalance * exchangeRate));
     TotalBalance newTotalBalance = TotalBalance(
       totalEurBalance: newEurBalance,
       totalBrlBalance: newBrlBalance,
@@ -224,8 +227,8 @@ class FirestoreServices {
                     currentBrlValue: Util.roundToPrecision(((eurBalanceAvailable - changedEurBalance) * exchangeRate), 3),
                 })*/
         var newBalanceToSave = balanceList[i];
-        newBalanceToSave.currentEurValue =
-            Util.roundToPrecision(value: (eurBalanceAvailable - changedEurBalance));
+        newBalanceToSave.currentEurValue = Util.roundToPrecision(
+            value: (eurBalanceAvailable - changedEurBalance));
         newBalanceToSave.currentBrlValue = Util.roundToPrecision(
             value: ((eurBalanceAvailable - changedEurBalance) * exchangeRate));
         updatedBalanceList.add(newBalanceToSave);
@@ -251,8 +254,8 @@ class FirestoreServices {
       await batch.commit();
     } else {
       var currentBalanceCopy = currentBalance;
-      currentBalanceCopy.currentEurValue =
-          Util.roundToPrecision(value: (currentBalance.currentEurValue - eurValue));
+      currentBalanceCopy.currentEurValue = Util.roundToPrecision(
+          value: (currentBalance.currentEurValue - eurValue));
       currentBalanceCopy.currentBrlValue = Util.roundToPrecision(
           value: (currentBalance.currentBrlValue - (eurValue * exchangeRate)));
 
@@ -351,7 +354,26 @@ class FirestoreServices {
         }
       //TODO: implementar os outros operadores
     }
-
     return items;
+  }
+
+  Future<List<int>> importItems(List<Item> data) async {
+    List<int> saveResults = [];
+    for (int i = 0; i < data.length; i++) {
+      Item item = data[i];
+      int result = await saveItem(item);
+      saveResults.add(result);
+      if (result == SaveItemResults.noBalance.index) {
+        //Inserir o mesmo resultado para os demais itens
+        //Assim não precisa chamar a função de salvamento para cada item
+        //E a Lista será usada depois
+        //para escrever um novo arquivo com os itens que não foram importados
+        for (int j = i + 1; j < data.length; j++) {
+          saveResults.add(SaveItemResults.noBalance.index);
+        }
+      }
+    }
+    await FileServices.writeImportResult(data, saveResults);
+    return saveResults;
   }
 }

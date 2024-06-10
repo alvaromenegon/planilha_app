@@ -1,8 +1,9 @@
 import 'dart:io';
 import 'dart:async';
+import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
 
-class FileUtils {
+class FileUtil {
   static Future<String> get localPath async {
     Directory? directory = await getExternalStorageDirectory();
     directory??= await getApplicationDocumentsDirectory();
@@ -26,5 +27,13 @@ class FileUtils {
     } catch (e) {
       return 'Error reading file: $e';
     }
+  }
+
+  static Future<File?> pickFile() async {
+    final result = await FilePicker.platform.pickFiles(allowMultiple: false,allowedExtensions: ['csv'], type: FileType.custom);
+    if (result == null) {
+      return null;
+    }
+    return File(result.files.single.path!);
   }
 }

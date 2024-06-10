@@ -92,6 +92,7 @@ class AddBalanceFormState extends State {
                 child: Input(
                   label: 'Taxa',
                   value: _balance.excRateAtDate.toString(),
+                  type: 'number',
                   onChanged: (value) {
                     setState(() {
                       _balance.excRateAtDate = double.parse(value);
@@ -123,8 +124,6 @@ class AddBalanceFormState extends State {
                 final FirestoreServices fs = FirestoreServices();
                 _success = await fs.addBalance(_balance);
                 if (_success == AddBalanceResults.success.index) {
-                  print('Success');
-                  print(_balance.toString());
                   setState(() {
                     _balance.reset();
                   });
@@ -134,6 +133,7 @@ class AddBalanceFormState extends State {
                 } else {
                   print('Error.');                  
                 }
+                
                 setState(() {
                   _success = AddBalanceResults.idle.index;
                 });

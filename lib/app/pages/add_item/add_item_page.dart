@@ -122,7 +122,6 @@ class AddItemFormState extends State<AddItemForm> {
                   _success = await fs.saveItem(_item);
                   //_success = true;
                   if (_success == SaveItemResults.success.index) {
-                    
                     print('Success');
                   } else if (_success == SaveItemResults.invalidData.index) {
                     print('Invalid data');
@@ -157,7 +156,7 @@ class AddItemFormState extends State<AddItemForm> {
               },
               label: _success == SaveItemResults.idle.index
                   ? 'Adicionar'
-                  : 'Aguarde...'),
+                  : 'Aguarde...'),          
         ],
       ),
     ));
