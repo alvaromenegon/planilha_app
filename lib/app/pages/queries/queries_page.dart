@@ -7,10 +7,7 @@ import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/classes/query.dart';
 import 'package:planilla_android/app/core/ui/styles/colors_app.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
-import 'package:logging/logging.dart';
 import 'package:planilla_android/app/util/date_util.dart';
-
-final log = Logger('QueryPageState');
 
 class QueryPage extends StatefulWidget {
   const QueryPage({super.key});
@@ -21,7 +18,6 @@ class QueryPage extends StatefulWidget {
 
 class QueryPageState extends State<QueryPage> {
   final _formKey = GlobalKey<FormState>();
-  bool _invalid = false;
   List<Item> _data = [];
 
   final List<String> _years = List.generate(
@@ -46,10 +42,6 @@ class QueryPageState extends State<QueryPage> {
 
   @override
   Widget build(BuildContext context) {
-    Logger.root.level = Level.ALL;
-    Logger.root.onRecord.listen((record) {
-      print('${record.level.name}: ${record.time}: ${record.message}');
-    });
     return Scaffold(
         appBar: AppBar(
           title: const Text('Pesquisa'),
@@ -96,9 +88,6 @@ class QueryPageState extends State<QueryPage> {
                         // chamar a função de pesquisa
                         if (_formKey.currentState!.validate()) {
                           _formKey.currentState!.save();
-                          _invalid = false;
-                          log.info('${query.year}, ${query.month}');
-
                           //log.info('Data: $_data');
                           FirestoreServices()
                               .getItems(query.year, query.month)
@@ -117,7 +106,6 @@ class QueryPageState extends State<QueryPage> {
                               onChanged: (value) {
                                 setState(() {
                                   query.field = value!;
-                                  _invalid = false;
                                 });
                               })),
                       Expanded(
@@ -158,7 +146,6 @@ class QueryPageState extends State<QueryPage> {
                             label: 'Valor',
                             value: query.value,
                             type: query.field == 'Valor' ? 'number' : 'text',
-                            //invalid: _invalid,
                             onChanged: (value) {
                               setState(() {
                                 query.value = value;
@@ -170,16 +157,17 @@ class QueryPageState extends State<QueryPage> {
                         if (_formKey.currentState!.validate() &&
                             query.validate()) {
                           _formKey.currentState!.save();
-                          _invalid = false;
                           // chamar a função de pesquisa
                           FirestoreServices()
                               .getItemsWithQuery(query)
                               .then((value) => updateData(value));
-                          log.info('Data: $_data');
                         } else {
-                          setState(() {
-                            _invalid = true;
-                          });
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text(
+                                        'Preencha todos os campos corretamente')));
+                          }
                         }
                       },
                       label: 'Consultar',
