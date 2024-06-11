@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:planilla_android/app/core/classes/json_object.dart';
-import 'package:planilla_android/app/core/errors/errors.dart';
+import 'package:csv/csv.dart';
 
 class Item implements JsonObject {
   num eurValue;
@@ -97,33 +97,67 @@ class Item implements JsonObject {
   }
 
   String convertToCSV() {
-    return '$item,$type,$detail,$eurValue,$brlValue,$date,$eurBalance,$brlBalance,$timestamp';
+    //Formatar strings para não quebrar o CSV
+    String formatItem = '"${item.replaceAll('"', '""')}"';
+    String formatDetail = '"${detail?.replaceAll('"', '""')}"';
+    String? formatTimestamp;
+    if (timestamp != null){
+      formatTimestamp = '${timestamp?.seconds}=${timestamp?.nanoseconds}';
+    } 
+    return '$formatItem,$type,$formatDetail,$eurValue,$brlValue,$date,$eurBalance,$brlBalance,$formatTimestamp';
   }
 
   static List<Item> convertFromCSV(String csv) {
     List<Item> items = [];
-    List<String> lines = csv.split('\n');
+    List<List<dynamic>> csvList = const CsvToListConverter().convert(csv, eol: '\n');
+    for (List<dynamic> values in csvList) {
+      List<String>? timestampValues;
+      if (values[8].contains('=')){
+        timestampValues = values[8].split('=');
+      } else {
+        timestampValues = null;
+      }
+      Timestamp? timestamp = timestampValues != null ? Timestamp(int.parse(timestampValues[0]), int.parse(timestampValues[1])) : null;
+      Item newItem = Item(
+          item: values[0],
+          type: values[1],
+          detail: values[2],
+          eurValue: values[3],
+          brlValue: values[4],
+          date: values[5],
+          eurBalance: values[6],
+          brlBalance: values[7],
+          timestamp: timestamp
+      );
+      items.add(newItem);
+    }
+
+    /*List<String> lines = csv.split('\n');
     try {
       for (String line in lines) {        
-        List<String> values = line.split(',');
-        Timestamp? timestamp;
-        if (values[8] == 'null'){
-          timestamp = null;
-        } else {
-          String milis = values[8].split('=')[1];
-          String nanos = values[9].split('=')[1].replaceAll(')','');
-          try{
-            timestamp = Timestamp(int.parse(milis), int.parse(nanos));
-          } catch (e) {
-            timestamp = null;
-            print('Error converting timestamp: $e');
-          }
+        List<String> values;
+        int detailStart = line.indexOf('"');
+        int detailEnd = line.lastIndexOf('"');
+        String? details;
+        bool contains = false;
+        if (detailStart != -1 && detailEnd != -1){
+          details = line.substring(detailStart + 1, detailEnd);
         }
-        if ((timestamp == null && values.length == 9) || (timestamp != null && values.length == 10)) {
-          items.add(Item(
+
+        contains = details?.contains(',') ?? false;
+        if (contains){
+          values = ('${line.substring(0, detailStart)}, ,${line.substring(detailEnd + 1)}').split(',');
+        } else {
+          values = line.split(',');
+        }
+
+        List<String>? timestampStr = values[8].split('=');
+        Timestamp? timestamp = Timestamp(int.parse(timestampStr[0]), int.parse(timestampStr[1]));*/
+        
+          /*items.add(Item(
               item: values[0],
               type: values[1],
-              detail: values[2],
+              detail: details,
               eurValue: double.parse(values[3]),
               brlValue: double.parse(values[4]),
               date: values[5],
@@ -131,18 +165,11 @@ class Item implements JsonObject {
               brlBalance: double.parse(values[7]),
               timestamp: timestamp
           ));
-        } else {
-          print('Invalid line: $line');
-          throw InvalidLine();
-        }
       }
     } on Exception catch (e){
       print('Error converting from CSV: $e');
       throw InvalidBackup();
-    }
-    print('items:');
-    print(items);
-
+    }*/
     return items;
   }
 }

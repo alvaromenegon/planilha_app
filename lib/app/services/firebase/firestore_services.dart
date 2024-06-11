@@ -24,7 +24,7 @@ class FirestoreServices {
   Future<List<Item>> getAllItems() async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    final rootSnapshot = await db.collection('data').get();
+    final rootSnapshot = await db.collection(dataPath).get();
     List<String> years = [];
     for (var docSnapshot in rootSnapshot.docs) {
       years.add(docSnapshot.id);
@@ -34,7 +34,7 @@ class FirestoreServices {
       for (var year in years) {
         for (int i = 1; i <= 12; i++) {
           final yearSnapshot =
-              await db.collection('data').doc(year).collection('$i').get();
+              await db.collection(dataPath).doc(year).collection('$i').get();
           for (var docSnapshot in yearSnapshot.docs) {
             //print(docSnapshot.id);
             if (docSnapshot.exists) {
@@ -63,15 +63,23 @@ class FirestoreServices {
       String newBalanceId, num newExcRate, num newValue) async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    //final docRef = db.collection('balance').doc('averageExcRate');
     final docRef = db.collection(balancePath).doc('averageExcRate');
     final data = await docRef.get();
     if (data.exists) {
       final json = data.data() ?? {};
       //final num oldExcRate = json['exchangeRate'];
       print(json);
-      final balancesUsed = json['balancesUsed'];
-      print(balancesUsed);
+      List balancesUsed = json['balancesUsed'];
+      if (balancesUsed.isEmpty) {
+        //Se não houver saldos para calcular a média, o saldo que será adicionado
+        //será o primeiro a ser usado para calcular a média
+        await docRef.update({
+          'exchangeRate': newExcRate,
+          'balancesUsed': [newBalanceId],
+          'lastUpdate': Timestamp.now()
+        });
+        return newExcRate;
+      }
       final List<Balance> allBalances = await getBalances();
       //Calcular a média ponderada
       //Encontrar os saldos que estão sendo usados para calcular a média
@@ -84,11 +92,16 @@ class FirestoreServices {
           0, (previousValue, element) => previousValue + element.eurValue);
       //Obter o resultado da multiplicação de cada saldo pelo valor da taxa de câmbio
       final num sumExcRates = balancesToUse.fold(
-          0, (previousValue, element) => previousValue + element.excRateAtDate);
+          0,
+          (previousValue, element) =>
+              previousValue + (element.eurValue * element.excRateAtDate));
+      /*final num sumExcRates = balancesToUse.fold(
+          0, (previousValue, element) => previousValue + element.excRateAtDate);*/
       //Obter o novo valor do saldo que será adicionado
       final num newSumEurValues = sumEurValues + newValue;
       //Obter o novo valor da multiplicação do saldo pelo valor da taxa de câmbio
       final num newSumExcRates = sumExcRates + (newValue * newExcRate);
+
       //Calcular a nova taxa de câmbio
       final num updatedExcRate = newSumExcRates / newSumEurValues;
 
@@ -109,7 +122,6 @@ class FirestoreServices {
     }
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    //final docRef = db.collection('balance').doc();
     final coll = db.collection(balancePath);
     final collCount = await coll.count().get();
     final count = collCount.count ?? 0;
@@ -183,7 +195,6 @@ class FirestoreServices {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
     final docRef =
-        //db.collection('balance').where('currentEurValue', isGreaterThan: 0);
         db.collection(balancePath).where('currentEurValue', isGreaterThan: 0);
     final data = await docRef.get();
     if (data.docs.isEmpty) {
@@ -195,7 +206,6 @@ class FirestoreServices {
   Future<num> getExchangeRate() async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    //final docRef = db.collection('balance').doc('averageExcRate');
     final docRef = db.collection(balancePath).doc('averageExcRate');
     final data = await docRef.get();
     print(data.data());
@@ -267,7 +277,6 @@ class FirestoreServices {
       }
       final batch = db.batch();
       for (var balance in updatedBalanceList) {
-        //final balanceRef = db.collection('balance').doc(balance.balanceId);
         final balanceRef = db
             .collection(balancePath)
             .doc(balance.balanceId); //test collection(balance)
@@ -295,14 +304,12 @@ class FirestoreServices {
             }*/
       //await updateDoc(doc(db, 'balance', '${currentBalance.balanceId}'), newBalance);
       await db
-          //.collection('balance')
-          .collection('testBalance')
+          .collection(balancePath)
           .doc(currentBalance.balanceId)
           .update(newBalance);
     }
     await db
-        //.collection('balance')
-        .collection('testBalance')
+        .collection(balancePath)
         .doc('totalBalance')
         .update(newTotalBalance.toJson());
     //final updatedTotalBalance = await getTotalBalance();
@@ -334,7 +341,6 @@ class FirestoreServices {
     }
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    //final docRef = db.collection('data').doc(year).collection(month);
     final docRef = db.collection(dataPath).doc(year).collection(month);
     //Atualiza os saldos
     item.brlValue = item.eurValue * await getExchangeRate();
@@ -360,7 +366,6 @@ class FirestoreServices {
   Future<List<Item>> getItemsWithQuery(CQuery query) async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    //final docRef = db.collection('data').doc(query.year).collection(query.month);
     final docRef =
         db.collection(dataPath).doc(query.year).collection(query.month);
     List<Item> items = [];

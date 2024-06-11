@@ -12,7 +12,8 @@ class FileUtil {
 
   static Future<File> getLocalFile(String filename) async {
     //final path = await localPath;
-    return File('/storage/emulated/0/Documents/$filename');
+    String path = await localPath;
+    return File('$path/$filename');
   }
 
   static Future<File> writeToFile(String filename, String content) async {

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
@@ -17,7 +15,6 @@ class MonthViewPage extends StatefulWidget {
 class MonthViewPageState extends State<MonthViewPage> {
   String selectedMonth = DateTime.now().month.toString();
   String selectedYear = DateTime.now().year.toString();
-  String saveButtonText = 'Salvar backup';
   List<Item> monthData = [];
   final List<String> _months = [
     'Janeiro',
@@ -102,15 +99,7 @@ class MonthViewPageState extends State<MonthViewPage> {
                 onPressed: () {
                   Navigator.pushNamed(context, '/add_item');
                 },
-              ),
-              Platform.isAndroid
-                  ? Button.secondary(
-                      label: 'Salvar backup',
-                      onPressed: () async {
-                        Navigator.pushNamed(context, '/backup');
-                      },
-                    )
-                  : Container(),
+              )
             ],
           ),
         ));
