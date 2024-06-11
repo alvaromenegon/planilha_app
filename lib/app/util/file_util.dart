@@ -12,7 +12,7 @@ class FileUtil {
 
   static Future<File> getLocalFile(String filename) async {
     //final path = await localPath;
-    String path = await localPath;
+    String path = '/storage/emulated/0/Download';
     return File('$path/$filename');
   }
 
