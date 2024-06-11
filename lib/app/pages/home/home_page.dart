@@ -7,6 +7,7 @@ import 'package:planilla_android/app/core/classes/month_data_overview.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
+import 'package:planilla_android/app/services/firebase/firebase_authentication.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 
 class HomePage extends StatefulWidget {
@@ -36,16 +37,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    loadData();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Planilla App'),
+          title: Row(
+            children: [
+              const Spacer(),
+              const Text('Planilla'),
+              const Spacer(),
+              IconButton(
+                onPressed: () {
+                  FirebaseAuthServices.signOut();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, '/', (route) => false);
+                },
+                icon: const Icon(Icons.logout),
+              ),
+            ],
+          ),
         ),
         body: SingleChildScrollView(
           child: Column(

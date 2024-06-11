@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/input.dart';
@@ -52,8 +50,7 @@ class LoginPageState extends State<LoginPage> {
                               message = 'Invalid e-mail.';
                             } else {
                               message = '';
-                              print('User ID: $value');
-                              Navigator.pushReplacementNamed(context, '/home');
+                              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
                             }
                           })
                         } else {message = 'Fill in all fields.'}

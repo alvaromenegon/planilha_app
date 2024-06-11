@@ -23,9 +23,16 @@ class FirebaseAuthServices {
     return '';
   }
 
+  static void signOut() {
+    FirebaseAuth.instance.signOut();
+  }
+
   static bool isLogged(){
     final user = FirebaseAuth.instance.currentUser;
-    print(user);
     return user != null;
+  }
+
+  static User? getCurrentUser(){
+    return FirebaseAuth.instance.currentUser;
   }
 }

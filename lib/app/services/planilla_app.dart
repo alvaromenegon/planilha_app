@@ -8,8 +8,7 @@ import 'package:planilla_android/app/pages/home/home_page.dart';
 import 'package:planilla_android/app/pages/login/login_page.dart';
 import 'package:planilla_android/app/pages/month_view/month_view.dart';
 import 'package:planilla_android/app/pages/queries/queries_page.dart';
-import 'package:planilla_android/app/pages/splash/view/splash_route.dart';
-//import 'package:planilla_android/app/splash/view/splash_view.dart';
+import 'package:planilla_android/app/pages/splash/splash_page.dart';
 
 class PlanillaApp extends StatelessWidget {
   const PlanillaApp({super.key});
@@ -17,9 +16,10 @@ class PlanillaApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FlutterGetIt(
+      
       pages: [
         FlutterGetItPageBuilder(
-            page: (context) => const SplashRoute(), path: '/'),
+            page: (context) =>  const SplashPage(), path: '/'),
         FlutterGetItPageBuilder(
             page: (context) => const LoginPage(), path: '/auth/login'),
         FlutterGetItPageBuilder(
