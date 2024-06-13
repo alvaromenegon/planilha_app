@@ -1,4 +1,4 @@
-package com.example.planilla_android
+package com.alvaromenegon.planilla
 
 import io.flutter.embedding.android.FlutterActivity
 
