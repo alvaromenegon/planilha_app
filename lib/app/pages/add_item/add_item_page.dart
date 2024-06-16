@@ -34,9 +34,6 @@ class AddItemFormState extends State<AddItemForm> {
   final _formKey = GlobalKey<FormState>();
   final _item = Item(
     eurValue: 0,
-    brlValue: 0,
-    eurBalance: 0,
-    brlBalance: 0,
     item: '',
     date: Util.getFormattedDate(DateTime.now()),
     type: '',
@@ -129,9 +126,6 @@ class AddItemFormState extends State<AddItemForm> {
                       _item.detail = '';
                       _item.type = '';
                       _item.eurValue = 0;
-                      _item.brlValue = 0;
-                      _item.eurBalance = 0;
-                      _item.brlBalance = 0;
                       _item.date = Util.getFormattedDate(DateTime.now());
                     });
                     if (context.mounted) {
@@ -155,27 +149,6 @@ class AddItemFormState extends State<AddItemForm> {
                     }
                   } else if (_success == SaveItemResults.invalidData.index) {
                     print('Invalid data');
-                  } else if (_success == SaveItemResults.noBalance.index) {
-                    if (context.mounted) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Sem saldo disponível.'),
-                              content: const Text(
-                                  'Não há saldo disponível para adicionar um novo item.\nA operação foi cancelada.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          });
-                    }
-                    print('No balance');
                   } else {
                     print('Error');
                   }

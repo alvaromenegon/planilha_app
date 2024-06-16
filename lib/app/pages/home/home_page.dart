@@ -1,10 +1,9 @@
 // ignore_for_file: avoid_print
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/month_data_overview.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
+import 'package:planilla_android/app/core/ui/components/button_with_icon.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
 import 'package:planilla_android/app/services/firebase/firebase_authentication.dart';
@@ -59,8 +58,11 @@ class _HomePageState extends State<HomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              Button.primary(
+              ButtonWithIcon.primary(
                   label: 'Abrir Planilha',
+                  labelPosition: 'top',
+                  labelSize: 10,
+                  iconName: Icons.calendar_today,
                   onPressed: () {
                     Navigator.pushNamed(context, '/month');
                   }),
@@ -79,21 +81,16 @@ class _HomePageState extends State<HomePage> {
                       onPressed: () {
                         Navigator.pushNamed(context, '/queries');
                       }),
-                  Button.primary(
-                      label: 'Ver saldo',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/balance');
-                      }),
-                ],
-              ),
-              Platform.isAndroid
+                      Platform.isAndroid
                   ? Button.secondary(
                       label: 'Backup',
                       onPressed: () async {
                         Navigator.pushNamed(context, '/backup');
                       },
                     )
-                  : Container(),
+                  : Container()
+                ],
+              ),
             ],
           ),
         ));

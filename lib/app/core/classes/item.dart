@@ -4,9 +4,6 @@ import 'package:csv/csv.dart';
 
 class Item implements JsonObject {
   num eurValue;
-  num brlValue;
-  num eurBalance;
-  num brlBalance;
   String item;
   String? detail;
   String date;
@@ -15,9 +12,6 @@ class Item implements JsonObject {
 
   Item(
       {required this.eurValue,
-      required this.brlValue,
-      required this.eurBalance,
-      required this.brlBalance,
       required this.item,
       this.detail,
       required this.date,
@@ -30,26 +24,18 @@ class Item implements JsonObject {
         type: json['type'],
         detail: json['detail'] ?? '',
         eurValue: json['eurValue'],
-        brlValue: json['brlValue'],
         date: json['date'],
-        eurBalance: json['eurBalance'],
-        brlBalance: json['brlBalance'],
         timestamp: json['timestamp']);
   }
 
   @override
   Map<String, dynamic> toJson() {
-    //DateTime? date = timestamp?.toDate();
-    //String dateStr = date != null ? '${date.year}-${date.month}-${date.day} - ${date.hour}:${date.minute}' : '';
     return {
       'item': item,
       'type': type,
       'detail': detail,
       'eurValue': eurValue,
-      'brlValue': brlValue,
       'date': date,
-      'eurBalance': eurBalance,
-      'brlBalance': brlBalance,
       'timestamp': timestamp
     };
   }
@@ -59,11 +45,8 @@ class Item implements JsonObject {
       'Item',
       'Tipo',
       'Detalhes',
-      'Valor (EUR)',
-      'Valor (BRL)',
+      'Valor',
       'Data',
-      'Saldo (EUR)',
-      'Saldo (BRL)',
       'Timestamp'
     ];
   }
@@ -82,20 +65,6 @@ class Item implements JsonObject {
     return '${toJson().toString()},\n';
   }
 
-  String toJsonFile() {
-    return '''{
-      "item": "$item",
-      "type": "$type",
-      "detail": "$detail",
-      "eurValue": $eurValue,
-      "brlValue": $brlValue,
-      "date": "$date",
-      "eurBalance": $eurBalance,
-      "brlBalance": $brlBalance,
-      "timestamp": "$timestamp"
-    }''';
-  }
-
   String convertToCSV() {
     //Formatar strings para não quebrar o CSV
     String formatItem = '"${item.replaceAll('"', '""')}"';
@@ -104,7 +73,7 @@ class Item implements JsonObject {
     if (timestamp != null){
       formatTimestamp = '${timestamp?.seconds}=${timestamp?.nanoseconds}';
     } 
-    return '$formatItem,$type,$formatDetail,$eurValue,$brlValue,$date,$eurBalance,$brlBalance,$formatTimestamp';
+    return '$formatItem,$type,$formatDetail,$eurValue,$date,$formatTimestamp';
   }
 
   static List<Item> convertFromCSV(String csv) {
@@ -112,8 +81,8 @@ class Item implements JsonObject {
     List<List<dynamic>> csvList = const CsvToListConverter().convert(csv, eol: '\n');
     for (List<dynamic> values in csvList) {
       List<String>? timestampValues;
-      if (values[8].contains('=')){
-        timestampValues = values[8].split('=');
+      if (values[5].contains('=')){
+        timestampValues = values[6].split('=');
       } else {
         timestampValues = null;
       }
@@ -123,53 +92,11 @@ class Item implements JsonObject {
           type: values[1],
           detail: values[2],
           eurValue: values[3],
-          brlValue: values[4],
-          date: values[5],
-          eurBalance: values[6],
-          brlBalance: values[7],
+          date: values[4],
           timestamp: timestamp
       );
       items.add(newItem);
     }
-
-    /*List<String> lines = csv.split('\n');
-    try {
-      for (String line in lines) {        
-        List<String> values;
-        int detailStart = line.indexOf('"');
-        int detailEnd = line.lastIndexOf('"');
-        String? details;
-        bool contains = false;
-        if (detailStart != -1 && detailEnd != -1){
-          details = line.substring(detailStart + 1, detailEnd);
-        }
-
-        contains = details?.contains(',') ?? false;
-        if (contains){
-          values = ('${line.substring(0, detailStart)}, ,${line.substring(detailEnd + 1)}').split(',');
-        } else {
-          values = line.split(',');
-        }
-
-        List<String>? timestampStr = values[8].split('=');
-        Timestamp? timestamp = Timestamp(int.parse(timestampStr[0]), int.parse(timestampStr[1]));*/
-        
-          /*items.add(Item(
-              item: values[0],
-              type: values[1],
-              detail: details,
-              eurValue: double.parse(values[3]),
-              brlValue: double.parse(values[4]),
-              date: values[5],
-              eurBalance: double.parse(values[6]),
-              brlBalance: double.parse(values[7]),
-              timestamp: timestamp
-          ));
-      }
-    } on Exception catch (e){
-      print('Error converting from CSV: $e');
-      throw InvalidBackup();
-    }*/
     return items;
   }
 }
