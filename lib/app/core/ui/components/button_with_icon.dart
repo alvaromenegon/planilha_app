@@ -15,7 +15,8 @@ class ButtonWithIcon extends StatelessWidget {
   final VoidCallback? onPressed;
   final bool outline;
 
-  const ButtonWithIcon({super.key,
+  const ButtonWithIcon(
+      {super.key,
       required this.style,
       this.label,
       required this.iconName,
@@ -24,9 +25,8 @@ class ButtonWithIcon extends StatelessWidget {
       this.height,
       this.onPressed,
       this.padding = 8.0,
-      this.outline = false, 
-      this.labelSize = 10.0
-      });
+      this.outline = false,
+      this.labelSize = 10.0});
 
   ButtonWithIcon.primary({
     super.key,
@@ -39,7 +39,7 @@ class ButtonWithIcon extends StatelessWidget {
     this.onPressed,
     this.padding = 8.0,
     this.outline = false,
-  })  : style = outline
+  }) : style = outline
             ? ButtonStyles.instance.primaryOutline
             : ButtonStyles.instance.primary;
 
@@ -59,14 +59,19 @@ class ButtonWithIcon extends StatelessWidget {
             : ButtonStyles.instance.secondary;
 
   Widget positionLabel() {
-    final icon = Icon(iconName, color: outline ? ColorsApp.instance.primary : Colors.white);
+    final icon = Icon(iconName,
+        color: outline ? ColorsApp.instance.primary : Colors.white);
     if (label == null) {
       return icon;
     }
-    final labeltext = Text(
+    final labeltext = Padding(padding: const EdgeInsets.only(top: 2.0) ,
+    child: Text(
       label!,
-      style: TextStyles.instance.buttonLabel.copyWith(fontSize: labelSize),
-    );
+      style: outline
+          ? TextStyles.instance.buttonLabel
+              .copyWith(fontSize: labelSize, color: ColorsApp.instance.primary)
+          : TextStyles.instance.buttonLabel.copyWith(fontSize: labelSize),
+    ));
     switch (labelPosition) {
       case 'top':
         return Column(
@@ -100,16 +105,12 @@ class ButtonWithIcon extends StatelessWidget {
             ? Padding(
                 padding: EdgeInsets.all(padding),
                 child: OutlinedButton(
-                  onPressed: onPressed,
-                  style: style,
-                  child: positionLabel()
-                ))
+                    onPressed: onPressed, style: style, child: positionLabel()))
             : Padding(
                 padding: EdgeInsets.all(padding),
                 child: ElevatedButton(
-                    onPressed: onPressed, style: style, child: positionLabel())));
+                    onPressed: onPressed,
+                    style: style,
+                    child: positionLabel())));
   }
-
-
-
 }

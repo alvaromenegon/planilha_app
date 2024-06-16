@@ -1,9 +1,8 @@
 // ignore_for_file: avoid_print
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/month_data_overview.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
-import 'package:planilla_android/app/core/ui/components/button_with_icon.dart';
+import 'package:planilla_android/app/core/ui/components/nav.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
 import 'package:planilla_android/app/services/firebase/firebase_authentication.dart';
@@ -58,39 +57,14 @@ class _HomePageState extends State<HomePage> {
         body: SingleChildScrollView(
           child: Column(
             children: [
-              ButtonWithIcon.primary(
-                  label: 'Abrir Planilha',
-                  labelPosition: 'top',
-                  labelSize: 10,
-                  iconName: Icons.calendar_today,
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/month');
-                  }),
+              const Nav(),
               Text(style: TextStyles.instance.title, 'Visão geral'),
               Tabela(data: yearData, headers: MonthDataOverview.getHeaders()),
               Button.primary(
                 label: 'Atualizar',
                 onPressed: loadData,
                 outline: true,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Button.primary(
-                      label: 'Consultas',
-                      onPressed: () {
-                        Navigator.pushNamed(context, '/queries');
-                      }),
-                      Platform.isAndroid
-                  ? Button.secondary(
-                      label: 'Backup',
-                      onPressed: () async {
-                        Navigator.pushNamed(context, '/backup');
-                      },
-                    )
-                  : Container()
-                ],
-              ),
+              )
             ],
           ),
         ));
