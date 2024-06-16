@@ -5,7 +5,6 @@ import 'package:planilla_android/app/core/ui/components/date_picker.dart';
 import 'package:planilla_android/app/core/ui/components/input.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
-import 'package:planilla_android/app/util/util.dart';
 
 class AddBalancePage extends StatefulWidget {
   const AddBalancePage({super.key});
@@ -49,7 +48,7 @@ class AddBalancePageState extends State {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('Add Balance'),
+          title: const Text('Saldo'),
         ),
         body: SingleChildScrollView(
             child: Column(children: [
@@ -68,7 +67,11 @@ class AddBalancePageState extends State {
                         type: 'number',
                         onChanged: (value) {
                           setState(() {
-                            balance.eurValue = value.isEmpty? 0 : double.parse(value);
+                            try{
+                              balance.eurValue = (num.parse(value))/100;
+                            } on FormatException {
+                              balance.eurValue = 0;
+                            }
                           });
                         },
                       ),
@@ -81,10 +84,11 @@ class AddBalancePageState extends State {
                         type: 'number',
                         onChanged: (value) {
                           setState(() {
-                            balance.excRateAtDate = value.isEmpty
-                                ? 0
-                                : Util.roundToPrecision(
-                                    value: double.parse(value), precision: 3);
+                            try{
+                              balance.excRateAtDate = (num.parse(value))/100;
+                            } on FormatException {
+                              balance.excRateAtDate = 0;
+                            }
                           });
                         },
                       ),

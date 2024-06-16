@@ -94,11 +94,12 @@ class AddItemFormState extends State<AddItemForm> {
             type: 'number',
             value: _item.eurValue.toString(),
             onChanged: (value) {
-              setState(() {
-                if (value.isEmpty) {
-                  value = '0';
+              setState(() {                
+                try{
+                  _item.eurValue = (num.parse(value))/100;
+                } on FormatException {
+                  _item.eurValue = 0;
                 }
-                _item.eurValue = double.parse(value);
               });
             },
           ),
@@ -123,6 +124,35 @@ class AddItemFormState extends State<AddItemForm> {
                   //_success = true;
                   if (_success == SaveItemResults.success.index) {
                     print('Success');
+                    setState(() {
+                      _item.item = '';
+                      _item.detail = '';
+                      _item.type = '';
+                      _item.eurValue = 0;
+                      _item.brlValue = 0;
+                      _item.eurBalance = 0;
+                      _item.brlBalance = 0;
+                      _item.date = Util.getFormattedDate(DateTime.now());
+                    });
+                    if (context.mounted) {
+                      showDialog(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return AlertDialog(
+                              title: const Text('Item adicionado.'),
+                              content: const Text(
+                                  'O item foi adicionado com sucesso.'),
+                              actions: <Widget>[
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('OK'),
+                                ),
+                              ],
+                            );
+                          });
+                    }
                   } else if (_success == SaveItemResults.invalidData.index) {
                     print('Invalid data');
                   } else if (_success == SaveItemResults.noBalance.index) {

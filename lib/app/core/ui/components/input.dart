@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:planilla_android/app/core/ui/styles/colors_app.dart';
 import './label.dart';
 
@@ -30,6 +31,14 @@ class InputState extends State<Input> {
     _controller = TextEditingController(text: widget.value);
   }
 
+   @override
+  void didUpdateWidget(covariant Input oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.value != oldWidget.value) {
+      _controller.text = widget.value;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     InputDecorationTheme themeData = Theme.of(context).inputDecorationTheme;
@@ -43,6 +52,9 @@ class InputState extends State<Input> {
               decoration: InputDecoration(
                 fillColor: widget.invalid ? ColorsApp.instance.error : themeData.fillColor,
               ),
+              inputFormatters: [
+                widget.type == 'number' ? FilteringTextInputFormatter.digitsOnly : FilteringTextInputFormatter.singleLineFormatter,
+              ],
               keyboardType:
                   widget.type == 'number' ? TextInputType.number : TextInputType.text,
               controller: _controller,
