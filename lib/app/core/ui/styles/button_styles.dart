@@ -50,6 +50,38 @@ class ButtonStyles{
       color: ColorsApp.instance.secondary
     )
   );
+
+  ButtonStyle get danger => ElevatedButton.styleFrom(
+    backgroundColor: Colors.red,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15)
+    ),
+    textStyle: TextStyles.instance.label
+  );
+
+  ButtonStyle get dangerOutline => OutlinedButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    side: const BorderSide(
+      color: Colors.red,
+    ),
+    textStyle: TextStyles.instance.label.copyWith(
+      color: Colors.red[400]
+    )
+  );
+
+  ButtonStyle get onPrimary => ElevatedButton.styleFrom(
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    side: const BorderSide(
+      color: Colors.white,
+    ),
+    textStyle: TextStyles.instance.label.copyWith(
+      color: Colors.white
+    ),
+  );
 }
 
 extension ButtonStylesExtensions on BuildContext{

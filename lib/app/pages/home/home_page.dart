@@ -50,6 +50,7 @@ class _HomePageState extends State<HomePage> {
                       context, '/', (route) => false);
                 },
                 icon: const Icon(Icons.logout),
+                color: Colors.red[400],
               ),
             ],
           ),

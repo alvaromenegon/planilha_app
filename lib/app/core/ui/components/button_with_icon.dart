@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/ui/styles/button_styles.dart';
-import 'package:planilla_android/app/core/ui/styles/colors_app.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
 
 class ButtonWithIcon extends StatelessWidget {
@@ -9,6 +8,7 @@ class ButtonWithIcon extends StatelessWidget {
   final String? label;
   final String? labelPosition;
   final double? labelSize;
+  final Color? labelColor;
   final double? width;
   final double? height;
   final double padding;
@@ -21,6 +21,7 @@ class ButtonWithIcon extends StatelessWidget {
       this.label,
       required this.iconName,
       this.labelPosition,
+      this.labelColor = Colors.black,
       this.width,
       this.height,
       this.onPressed,
@@ -34,6 +35,7 @@ class ButtonWithIcon extends StatelessWidget {
     required this.iconName,
     this.labelPosition = 'bottom',
     this.labelSize = 10.0,
+    this.labelColor,
     this.width,
     this.height,
     this.onPressed,
@@ -49,6 +51,7 @@ class ButtonWithIcon extends StatelessWidget {
       required this.iconName,
       this.labelPosition = 'bottom',
       this.labelSize = 10.0,
+      this.labelColor,
       this.width,
       this.height,
       this.onPressed,
@@ -58,9 +61,39 @@ class ButtonWithIcon extends StatelessWidget {
             ? ButtonStyles.instance.secondaryOutline
             : ButtonStyles.instance.secondary;
 
+  ButtonWithIcon.onPrimary(
+      {super.key,
+      this.label,
+      required this.iconName,
+      this.labelPosition = 'bottom',
+      this.labelSize = 10.0,
+      this.labelColor = Colors.white,
+      this.width,
+      this.height,
+      this.onPressed,
+      this.padding = 8.0,
+      this.outline = false})
+      : style = ButtonStyles.instance.onPrimary;
+
+  ButtonWithIcon.danger(
+      {super.key,
+      this.label,
+      required this.iconName,
+      this.labelPosition = 'bottom',
+      this.labelSize = 10.0,
+      this.width,
+      this.height,
+      this.onPressed,
+      this.padding = 8.0,
+      this.outline = false})
+      : style = outline ?
+            ButtonStyles.instance.dangerOutline
+            : ButtonStyles.instance.danger,
+        labelColor = outline ? Colors.red[400] : Colors.white;
+
   Widget positionLabel() {
     final icon = Icon(iconName,
-        color: outline ? ColorsApp.instance.primary : Colors.white);
+        color: labelColor);
     if (label == null) {
       return icon;
     }
@@ -69,7 +102,7 @@ class ButtonWithIcon extends StatelessWidget {
       label!,
       style: outline
           ? TextStyles.instance.buttonLabel
-              .copyWith(fontSize: labelSize, color: ColorsApp.instance.primary)
+              .copyWith(fontSize: labelSize, color: labelColor)
           : TextStyles.instance.buttonLabel.copyWith(fontSize: labelSize),
     ));
     switch (labelPosition) {
