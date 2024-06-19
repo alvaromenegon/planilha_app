@@ -20,7 +20,7 @@ class CQuery{
 
   static List<String> get fields => ['Item', 'Tipo','Valor','Data','Detalhes'];
   static List<String> get numericOperators => ['==', '>', '<', '>=', '<=', '!='];
-  static List<String> get stringOperators => ['==', '!=', 'in', 'not-in']; 
+  static List<String> get stringOperators => ['==', '!='];//, 'in', 'not-in']; 
 
   static String fieldConversion(String field){
     final Map<String, String> conversion = {
