@@ -1,7 +1,7 @@
 // ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/month_data_overview.dart';
-import 'package:planilla_android/app/core/ui/components/button.dart';
+import 'package:planilla_android/app/core/ui/components/button_with_icon.dart';
 import 'package:planilla_android/app/core/ui/components/nav.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
@@ -61,8 +61,8 @@ class _HomePageState extends State<HomePage> {
               const Nav(),
               Text(style: TextStyles.instance.title, 'Visão geral'),
               Tabela(data: yearData, headers: MonthDataOverview.getHeaders()),
-              Button.primary(
-                label: 'Atualizar',
+              ButtonWithIcon.primary(
+                iconName: Icons.refresh,
                 onPressed: loadData,
                 outline: true,
               )

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/ui/styles/button_styles.dart';
+import 'package:planilla_android/app/core/ui/styles/colors_app.dart';
 import 'package:planilla_android/app/core/ui/styles/text_styles.dart';
 
 class ButtonWithIcon extends StatelessWidget {
@@ -35,7 +36,6 @@ class ButtonWithIcon extends StatelessWidget {
     required this.iconName,
     this.labelPosition = 'bottom',
     this.labelSize = 10.0,
-    this.labelColor,
     this.width,
     this.height,
     this.onPressed,
@@ -43,7 +43,8 @@ class ButtonWithIcon extends StatelessWidget {
     this.outline = false,
   }) : style = outline
             ? ButtonStyles.instance.primaryOutline
-            : ButtonStyles.instance.primary;
+            : ButtonStyles.instance.primary,
+        labelColor = outline ? ColorsApp.instance.primary : Colors.white;
 
   ButtonWithIcon.secondary(
       {super.key,
@@ -51,7 +52,6 @@ class ButtonWithIcon extends StatelessWidget {
       required this.iconName,
       this.labelPosition = 'bottom',
       this.labelSize = 10.0,
-      this.labelColor,
       this.width,
       this.height,
       this.onPressed,
@@ -59,7 +59,8 @@ class ButtonWithIcon extends StatelessWidget {
       this.outline = false})
       : style = outline
             ? ButtonStyles.instance.secondaryOutline
-            : ButtonStyles.instance.secondary;
+            : ButtonStyles.instance.secondary,
+            labelColor = outline ? ColorsApp.instance.secondary : Colors.white;
 
   ButtonWithIcon.onPrimary(
       {super.key,
