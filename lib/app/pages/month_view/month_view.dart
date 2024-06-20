@@ -93,7 +93,7 @@ class MonthViewPageState extends State<MonthViewPage> {
                   updateData(selectedYear, selectedMonth);
                 },
               ),
-              Tabela(data: monthData, headers: Item.getHeaders()),
+              Tabela(data: monthData, headers: Item.getHeaders(), showIndex: true),
               Button.primary(
                 label: 'Adicionar Item',
                 onPressed: () {

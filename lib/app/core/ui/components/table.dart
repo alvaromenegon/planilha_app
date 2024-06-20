@@ -13,9 +13,15 @@ import 'package:planilla_android/app/core/ui/theme/theme_config.dart';
 class Tabela extends StatelessWidget {
   final List<dynamic> data;
   final List<String> headers;
+  final bool showIndex;
   static var defaultBorderColor = ColorsApp.instance.primary;
 
-  const Tabela({super.key, required this.data, required this.headers});
+  const Tabela({
+    super.key, 
+    required this.data, 
+    required this.headers,
+    this.showIndex = false,
+    });
 
   @override
   Widget build(BuildContext context) {
@@ -62,6 +68,12 @@ class Tabela extends StatelessWidget {
 
   List<DataColumn> _buildColumns() {
     // Defina as colunas da tabela aqui
+    if (showIndex) {
+      return [
+        const DataColumn(label: Text('#')),
+        ...headers.map((header) => DataColumn(label: Text(header)))
+      ];
+    }
     return headers.map((header) => DataColumn(label: Text(header))).toList();
   }
 
@@ -80,11 +92,18 @@ class Tabela extends StatelessWidget {
         throw Exception('Data must be a JsonObject or a Map<String,dynamic>');
       }
 
+      if (showIndex) {
+        return DataRow(
+            cells: [
+              DataCell(Text('${data.indexOf(row)+1}')),
+              ...jsonRow.values
+                  .map((cell) => DataCell(Text(_showText(cell))))
+                  .toList()
+                  .cast<DataCell>()
+            ].toList());
+      }
+
       return DataRow(
-          /*color: MaterialStateProperty.all<Color>(
-              row.runtimeType == MonthDataOverview
-                  ? (row as MonthDataOverview).colorForTotal
-                  : Colors.white),*/
           cells: jsonRow.values
               .map((cell) => DataCell(Text(_showText(cell))))
               .toList()
