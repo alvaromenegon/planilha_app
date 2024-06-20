@@ -19,12 +19,17 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   List<MonthDataOverview> yearData = [];
   FirestoreServices fs = FirestoreServices();
+  bool loading = false;
 
   Future<void> loadData() async {
+    setState(() {
+      loading = true;
+    });
     List<MonthDataOverview> data =
         await fs.getYearDataOverview('${DateTime.now().year}');
     setState(() {
       yearData = data;
+      loading = false;
     });
   }
 
@@ -59,13 +64,23 @@ class _HomePageState extends State<HomePage> {
           child: Column(
             children: [
               const Nav(),
-              Text(style: TextStyles.instance.title, 'Visão geral'),
-              Tabela(data: yearData, headers: MonthDataOverview.getHeaders()),
-              ButtonWithIcon.primary(
-                iconName: Icons.refresh,
-                onPressed: loadData,
-                outline: true,
-              )
+              Padding(
+                  padding: const EdgeInsets.only(top: 24.0,bottom: 24.0),
+                  child: Text(style: TextStyles.instance.title, 'Visão geral')),
+              loading
+                  ? const Center(
+                      child: CircularProgressIndicator(),
+                    )
+                  : Column(children: [
+                      Tabela(
+                          data: yearData,
+                          headers: MonthDataOverview.getHeaders()),
+                      ButtonWithIcon.primary(
+                        iconName: Icons.refresh,
+                        onPressed: loadData,
+                        outline: true,
+                      )
+                    ]),
             ],
           ),
         ));

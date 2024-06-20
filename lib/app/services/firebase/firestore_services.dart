@@ -45,9 +45,6 @@ class FirestoreServices {
     return items;
   }
 
-
-
-
   Future<List<MonthDataOverview>> getYearDataOverview(String year) async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
@@ -55,7 +52,6 @@ class FirestoreServices {
     for (var i = 1; i <= 12; i++) {
       List<Item> monthlyData = [];
       final coll = db.collection(dataPath).doc(year).collection('$i');
-      //final coll = db.collection('test').doc(year).collection('$i'); //test collection
       final snapshot = await coll.get();
       if (snapshot.docs.isNotEmpty) {
         monthlyData =
@@ -84,7 +80,6 @@ class FirestoreServices {
     return 0;
   }
 
-
   Future<int> saveItem(Item item) async {
     if (!item.preValidate()) {
       return SaveItemResults.invalidData.index;
@@ -107,7 +102,8 @@ class FirestoreServices {
   Future<List<Item>> getItems(String year, String month) async {
     await Firebase.initializeApp();
     var db = FirebaseFirestore.instance;
-    final docRef = db.collection(dataPath).doc(year).collection(month);
+    final docRef =
+        db.collection(dataPath).doc(year).collection(month).orderBy('date');
     //final docRef = db.collection('test').doc(year).collection(month);
     final data = await docRef.get();
     if (data.docs.isEmpty) {
@@ -122,23 +118,66 @@ class FirestoreServices {
     final docRef =
         db.collection(dataPath).doc(query.year).collection(query.month);
     List<Item> items = [];
+    dynamic val;
+    if (query.field == 'Valor') {
+      try {
+        val = num.parse(query.value);
+      } on FormatException {
+        return items;
+      }
+    } else {
+      val = query.value;
+    }
     switch (query.queryOperator) {
       case '==':
         final data = await docRef
-            .where(CQuery.fieldConversion(query.field), isEqualTo: query.value)
+            .where(CQuery.fieldConversion(query.field), isEqualTo: val)
             .get();
         if (data.docs.isNotEmpty) {
           items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
         }
       case '!=':
         final data = await docRef
-            .where(CQuery.fieldConversion(query.field),
-                isNotEqualTo: query.value)
+            .where(CQuery.fieldConversion(query.field), isNotEqualTo: val)
             .get();
         if (data.docs.isNotEmpty) {
           items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
         }
-      //TODO: implementar os outros operadores
+      case '>':
+        final data = await docRef
+            .where(CQuery.fieldConversion(query.field), isGreaterThan: val)
+            .get();
+        if (data.docs.isNotEmpty) {
+          items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
+        }
+      case '<':
+        final data = await docRef
+            .where(CQuery.fieldConversion(query.field), isLessThan: val)
+            .get();
+        if (data.docs.isNotEmpty) {
+          items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
+        }
+      case '>=':
+        final data = await docRef
+            .where(CQuery.fieldConversion(query.field),
+                isGreaterThanOrEqualTo: val)
+            .get();
+        if (data.docs.isNotEmpty) {
+          items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
+        }
+      case '<=':
+        final data = await docRef
+            .where(CQuery.fieldConversion(query.field),
+                isLessThanOrEqualTo: val)
+            .get();
+        if (data.docs.isNotEmpty) {
+          items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
+        }
+      default:
+        final data = await docRef.get();
+        if (data.docs.isNotEmpty) {
+          items = data.docs.map((doc) => Item.fromJson(doc.data())).toList();
+        }
     }
     return items;
   }

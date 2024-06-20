@@ -15,7 +15,7 @@ class CQuery{
 
   @override
   String toString(){
-    return 'PATH: data/$year/$month, WHERE $field $queryOperator $value';
+    return 'PATH: $year/$month, WHERE $field $queryOperator $value';
   }
 
   static List<String> get fields => ['Item', 'Tipo','Valor','Data','Detalhes'];
@@ -26,7 +26,7 @@ class CQuery{
     final Map<String, String> conversion = {
       'Item': 'item',
       'Tipo': 'type',
-      'Valor': 'value',
+      'Valor': 'eurValue',
       'Data': 'date',
       'Detalhes': 'details',
     };
