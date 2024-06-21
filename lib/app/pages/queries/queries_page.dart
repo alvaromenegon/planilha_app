@@ -63,8 +63,7 @@ class QueryPageState extends State<QueryPage> {
                               onChanged: (value) {
                                 setState(() {
                                   query.month =
-                                      (DateUtil.months.indexOf(value!) + 1)
-                                          .toString();
+                                      DateUtil.getMonthNumberAsString(value!);
                                 });
                               }),
                         ),

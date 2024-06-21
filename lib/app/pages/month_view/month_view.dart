@@ -4,6 +4,7 @@ import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/dropdown.dart';
 import 'package:planilla_android/app/core/ui/components/table.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
+import 'package:planilla_android/app/util/date_util.dart';
 
 class MonthViewPage extends StatefulWidget {
   const MonthViewPage({super.key});
@@ -16,26 +17,7 @@ class MonthViewPageState extends State<MonthViewPage> {
   String selectedMonth = DateTime.now().month.toString();
   String selectedYear = DateTime.now().year.toString();
   List<Item> monthData = [];
-  final List<String> _months = [
-    'Janeiro',
-    'Fevereiro',
-    'Março',
-    'Abril',
-    'Maio',
-    'Junho',
-    'Julho',
-    'Agosto',
-    'Setembro',
-    'Outubro',
-    'Novembro',
-    'Dezembro'
-  ];
-  final List<String> _years = List.generate(
-      2025 // Max year to show in the dropdown
-          -
-          2024 +
-          1,
-      (i) => (2024 + i).toString());
+  
 
   void updateData(String year, String month) async {
     List<Item> data = await FirestoreServices().getItems(year, month);
@@ -65,19 +47,19 @@ class MonthViewPageState extends State<MonthViewPage> {
                   Expanded(
                     child: Dropdown(
                         label: 'Mês',
-                        items: _months,
-                        value: _months[int.parse(selectedMonth) - 1],
+                        items: DateUtil.months,
+                        value: DateUtil.getMonth(selectedMonth) ,//_months[int.parse(selectedMonth) - 1],
                         onChanged: (value) {
                           setState(() {
                             selectedMonth =
-                                (_months.indexOf(value!) + 1).toString();
+                                DateUtil.getMonthNumberAsString(value!);
                           });
                         }),
                   ),
                   Expanded(
                     child: Dropdown(
                         label: 'Ano',
-                        items: _years,
+                        items: DateUtil.generateYears(),
                         value: selectedYear,
                         onChanged: (value) {
                           setState(() {

@@ -21,4 +21,8 @@ class DateUtil {
   static List<String> generateYears({int min = 2024, int max = 2025}) {
     return List.generate(max - min + 1, (i) => (min + i).toString());
   }
+
+  static String getMonthNumberAsString(String month) {
+    return '${months.indexOf(month) + 1}';
+  }
 }
