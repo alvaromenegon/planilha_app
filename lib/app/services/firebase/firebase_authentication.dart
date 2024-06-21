@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthServices {
@@ -13,10 +11,8 @@ class FirebaseAuthServices {
       return credential.user?.uid ?? '';
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
         return e.code;
       } else if (e.code == 'wrong-password') {
-        print('Wrong password provided for that user.');
         return e.code;
       }
     }

@@ -34,10 +34,10 @@ class FileServices {
       List<Item> data = Item.convertFromCSV(fileContent);
       return data;
     } on InvalidBackup catch (e) {
-      print(e.message);
+      writeLog(e.message);
       return null;
     } on InvalidLine catch (e) {
-      print('Erro ao importar dados: ${e.message}');
+      writeLog('Erro ao importar dados: ${e.message}');
       return null;
     }
   }
@@ -64,6 +64,10 @@ class FileServices {
       }
       await FileUtil.writeToFile(fileName, fileContent);
     }
+  }
 
+  static Future<void> writeLog(String message) async {
+    String date = '${DateTime.now().year}-${DateTime.now().month}-${DateTime.now().day}';
+    await FileUtil.writeToFile('pa-log-$date.txt', 'Generated file at ${DateTime.now()}\nError: $message');
   }
 }

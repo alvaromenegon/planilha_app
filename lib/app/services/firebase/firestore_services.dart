@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:planilla_android/app/core/classes/item.dart';
@@ -40,7 +38,7 @@ class FirestoreServices {
         }
       }
     } catch (e) {
-      print(e);
+      FileServices.writeLog(e.toString());
     }
     return items;
   }
@@ -66,18 +64,6 @@ class FirestoreServices {
       }
     }
     return yearData;
-  }
-
-  Future<num> getExchangeRate() async {
-    await Firebase.initializeApp();
-    var db = FirebaseFirestore.instance;
-    final docRef = db.collection(balancePath).doc('averageExcRate');
-    final data = await docRef.get();
-    print(data.data());
-    if (data.exists) {
-      return data.data()?['exchangeRate'];
-    }
-    return 0;
   }
 
   Future<int> saveItem(Item item) async {
