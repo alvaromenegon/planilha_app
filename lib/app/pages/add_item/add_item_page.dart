@@ -1,11 +1,10 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/material.dart';
 import 'package:planilla_android/app/core/classes/item.dart';
 import 'package:planilla_android/app/core/ui/components/button.dart';
 import 'package:planilla_android/app/core/ui/components/date_picker.dart';
 import 'package:planilla_android/app/core/ui/components/dropdown.dart';
 import 'package:planilla_android/app/core/ui/components/input.dart';
+import 'package:planilla_android/app/core/ui/helpers/messages.dart';
 import 'package:planilla_android/app/services/firebase/firestore_services.dart';
 import 'package:planilla_android/app/util/util.dart';
 
@@ -16,7 +15,7 @@ class AddItemPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Item'),
+        title: const Text('Adicionar Item'),
       ),
       body: const AddItemForm(),
     );
@@ -30,7 +29,7 @@ class AddItemForm extends StatefulWidget {
   AddItemFormState createState() => AddItemFormState();
 }
 
-class AddItemFormState extends State<AddItemForm> {
+class AddItemFormState extends State<AddItemForm> with Message {
   final _formKey = GlobalKey<FormState>();
   final _item = Item(
     eurValue: 0,
@@ -120,7 +119,7 @@ class AddItemFormState extends State<AddItemForm> {
                   _success = await fs.saveItem(_item);
                   //_success = true;
                   if (_success == SaveItemResults.success.index) {
-                    print('Success');
+                    showSuccess('Item adicionado.');
                     setState(() {
                       _item.item = '';
                       _item.detail = '';
@@ -128,29 +127,10 @@ class AddItemFormState extends State<AddItemForm> {
                       _item.eurValue = 0;
                       _item.date = Util.getFormattedDate(DateTime.now());
                     });
-                    if (context.mounted) {
-                      showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('Item adicionado.'),
-                              content: const Text(
-                                  'O item foi adicionado com sucesso.'),
-                              actions: <Widget>[
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: const Text('OK'),
-                                ),
-                              ],
-                            );
-                          });
-                    }
                   } else if (_success == SaveItemResults.invalidData.index) {
-                    print('Invalid data');
+                    showError('Dados inválidos.');
                   } else {
-                    print('Error');
+                    showError('Error');
                   }
                   setState(() {
                     _success = SaveItemResults.idle.index;
