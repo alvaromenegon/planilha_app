@@ -49,6 +49,7 @@ class _HomePageState extends State<HomePage> {
               const Text('Planilla'),
               const Spacer(),
               IconButton(
+                tooltip: 'Sair',
                 onPressed: () {
                   FirebaseAuthServices.signOut();
                   Navigator.pushNamedAndRemoveUntil(
