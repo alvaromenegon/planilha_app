@@ -41,14 +41,7 @@ class Item implements JsonObject {
   }
 
   static List<String> getHeaders() {
-    return [
-      'Item',
-      'Tipo',
-      'Detalhes',
-      'Valor',
-      'Data',
-      'Timestamp'
-    ];
+    return ['Item', 'Tipo', 'Detalhes', 'Valor', 'Data', 'Timestamp'];
   }
 
   ///Apenas faz uma pré-validação se os dados principais estão preenchidos
@@ -72,29 +65,39 @@ class Item implements JsonObject {
     String? formatTimestamp;
     if (timestamp != null){
       formatTimestamp = '${timestamp?.seconds}=${timestamp?.nanoseconds}';
-    } 
+    }
     return '$formatItem,$type,$formatDetail,$eurValue,$date,$formatTimestamp';
   }
 
   static List<Item> convertFromCSV(String csv) {
     List<Item> items = [];
-    List<List<dynamic>> csvList = const CsvToListConverter().convert(csv, eol: '\n');
+    List<List<dynamic>> csvList =
+        const CsvToListConverter().convert(csv, eol: '\n');
+
     for (List<dynamic> values in csvList) {
+      bool oldBackup = false;
+      if (values.length == 9) {
+        oldBackup = true;
+      }
       List<String>? timestampValues;
-      if (values[5].contains('=')){
-        timestampValues = values[6].split('=');
+      if (values[5].contains('=')) {
+        timestampValues = values[5].split('=');
+      } else if (oldBackup && values[8].contains('=')) {
+        timestampValues = values[8].split('=');
       } else {
         timestampValues = null;
       }
-      Timestamp? timestamp = timestampValues != null ? Timestamp(int.parse(timestampValues[0]), int.parse(timestampValues[1])) : null;
+      Timestamp? timestamp = timestampValues != null
+          ? Timestamp(
+              int.parse(timestampValues[0]), int.parse(timestampValues[1]))
+          : null;
       Item newItem = Item(
           item: values[0],
           type: values[1],
           detail: values[2],
           eurValue: values[3],
-          date: values[4],
-          timestamp: timestamp
-      );
+          date: oldBackup? values[5] :values[4],
+          timestamp: timestamp);
       items.add(newItem);
     }
     return items;
