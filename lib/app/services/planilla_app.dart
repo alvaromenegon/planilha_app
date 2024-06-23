@@ -37,6 +37,7 @@ class PlanillaApp extends StatelessWidget {
           title: 'Planilla App',
           theme: ThemeConfig.theme,
           navigatorObservers: [flutterGetItNavObserver],
+          debugShowCheckedModeBanner: false,
           routes: routes,
         );
       },

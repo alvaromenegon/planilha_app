@@ -10,7 +10,7 @@ enum AddBalanceResults { idle, loading, success, invalidData }
 enum SaveItemResults { idle, loading, success, noBalance, invalidData }
 
 class FirestoreServices {
-  final bool _debugMode = true;
+  final bool _debugMode = false;
 
   String get balancePath => _debugMode ? 'testBalance' : 'balance';
   String get dataPath => _debugMode ? 'test' : 'data';
