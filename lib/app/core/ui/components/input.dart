@@ -31,11 +31,13 @@ class InputState extends State<Input> {
     _controller = TextEditingController(text: widget.value);
   }
 
-   @override
+    @override
   void didUpdateWidget(covariant Input oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.value != oldWidget.value) {
+      final cursorPosition = _controller.selection;
       _controller.text = widget.value;
+      _controller.selection = cursorPosition;
     }
   }
 
