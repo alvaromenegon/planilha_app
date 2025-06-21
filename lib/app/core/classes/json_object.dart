@@ -1,3 +1,3 @@
-mixin JsonObject {
+abstract class JsonObject {
   Map<String, dynamic> toJson();
 }

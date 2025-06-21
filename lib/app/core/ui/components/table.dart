@@ -11,7 +11,7 @@ import 'package:planilla_android/app/core/ui/theme/theme_config.dart';
 /// Map<String, dynamic>
 /// ```
 class Tabela extends StatelessWidget {
-  final List<dynamic> data;
+  final List<JsonObject> data;
   final List<String> headers;
   static var defaultBorderColor = ColorsApp.instance.primary;
 
@@ -72,13 +72,7 @@ class Tabela extends StatelessWidget {
       // Convert the object to a Map<String, dynamic>
       // if it is a JsonObject or a Map<String,dynamic>
       // otherwise throw an exception
-      if (row is JsonObject) {
-        jsonRow = row.toJson();
-      } else if (row is Map<String, dynamic>) {
-        jsonRow = row;
-      } else {
-        throw Exception('Data must be a JsonObject or a Map<String,dynamic>');
-      }
+      jsonRow = row.toJson();
 
       return DataRow(
           /*color: MaterialStateProperty.all<Color>(
